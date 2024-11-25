@@ -1,14 +1,12 @@
 <script setup>
-import { getHeaderInfo } from '@/apis/layout';
-import { ref } from 'vue';
-const headerList = ref([])
-const getViews = async () => {
-  const res = await getHeaderInfo()
-  console.log(res);
-  headerList.value = res.data.result
-
-}
-getViews()
+import { useBannerStore } from '@/stores';
+import { onMounted } from 'vue';
+const useStore = useBannerStore()
+onMounted(
+  () =>{
+    useStore.getViews()
+  }
+)
 </script>
 
 <template>
@@ -18,7 +16,7 @@ getViews()
         <RouterLink to="/">小兔鲜</RouterLink>
       </h1>
       <ul class="app-header-nav">
-        <li class="home" v-for="item in headerList" :key="item.id">
+        <li class="home" v-for="item in useStore.bannnerList" :key="item.id">
           <RouterLink to="/">{{ item.name }}</RouterLink>
         </li>
       </ul>
