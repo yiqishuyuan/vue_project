@@ -11,3 +11,15 @@ export const getBannerInfo = (num) => {
     }
   })
 }
+// 新鲜好物接口
+export const getNewsFish = (num) =>{
+  return request.get('/home/new',{
+    params:{
+      limit: num
+    }
+  })
+}
+//产品
+export const getGoods = () =>{
+  return request.get('/home/goods')
+}

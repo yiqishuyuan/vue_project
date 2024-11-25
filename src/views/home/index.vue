@@ -9,7 +9,7 @@ defineOptions({
 })
 </script>
 <template>
-  <div style="height: 1000px;" class="container">
+  <div class="container">
     <homeCategory></homeCategory>
     <homeBanner></homeBanner>
   </div>

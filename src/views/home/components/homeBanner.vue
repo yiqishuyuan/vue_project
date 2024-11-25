@@ -6,7 +6,7 @@ getBannerInfo
 const bannerInfo = ref([])
 const getViews =async () =>{
     const res = await getBannerInfo('2')
-    console.log(res);
+    console.log('banner',res);
     bannerInfo.value = res.data.result
     
 }
