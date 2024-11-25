@@ -4,5 +4,5 @@ defineOptions({
 })
 </script>
 <template>
-  <div>home在这</div>
+  <div style="height: 1000px;">home在这</div>
 </template>
