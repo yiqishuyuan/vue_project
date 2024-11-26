@@ -2,10 +2,10 @@
 <script setup>
 import { getBannerInfo } from '@/apis/layout';
 import { onMounted, ref } from 'vue';
-getBannerInfo
+
 const bannerInfo = ref([])
 const getViews =async () =>{
-    const res = await getBannerInfo('2')
+    const res = await getBannerInfo(1)
     console.log('banner',res);
     bannerInfo.value = res.data.result
     

@@ -17,7 +17,7 @@ onMounted(
       </h1>
       <ul class="app-header-nav">
         <li class="home" v-for="item in useStore.bannnerList" :key="item.id">
-          <RouterLink to="/">{{ item.name }}</RouterLink>
+          <RouterLink active-class="active" :to="`/category/${item.id}`">{{ item.name }}</RouterLink>
         </li>
       </ul>
       <div class="search">

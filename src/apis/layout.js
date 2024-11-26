@@ -19,6 +19,10 @@ export const getNewsFish = (num) =>{
     }
   })
 }
+// 人气推荐
+export const getHotAPI = () => {
+  return  request.get('home/hot')
+}
 //产品
 export const getGoods = () =>{
   return request.get('/home/goods')
