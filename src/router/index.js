@@ -10,13 +10,24 @@ const router = createRouter({
         {
           path: '',
           component: () => import('@/views/home/index.vue')
-        },{
-          path:'/category/:id',
-          component:() => import('@/views/category/index.vue')
+        }, {
+          path: '/category/:id',
+          component: () => import('@/views/category/index.vue')
+        }, {
+          path: '/category/other/:id',
+          component: () => import('@/views/sonCategory/index.vue')
+        },
+        {
+          path:'/detail/:id',
+          component:() => import('@/views/detail/index.vue')
         }
       ]
     }
   ],
+  // 切换路由返回顶部
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 export default router

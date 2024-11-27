@@ -27,7 +27,7 @@ onMounted(() => getViews())
         </RouterLink>
         <ul class="goods-list">
           <li v-for="good in cate.goods" :key="good.id">
-            <RouterLink to="/" class="goods-item">
+            <RouterLink :to="`/detail/${good.id}`" class="goods-item">
               <img :src="good.picture" alt="" />
               <p class="name ellipsis">{{ good.name }}</p>
               <p class="desc ellipsis">{{ good.desc }}</p>

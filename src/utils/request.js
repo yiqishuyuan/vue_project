@@ -2,7 +2,7 @@ import axios from "axios";
 const baseURL = 'https://pcapi-xiaotuxian-front-devtest.itheima.net'
 const instance = axios.create({
   baseURL: baseURL,
-  timeout: 3000
+  timeout: 6000
 })
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
