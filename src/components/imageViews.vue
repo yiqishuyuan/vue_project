@@ -1,18 +1,47 @@
 <script setup>
-import { ref } from 'vue';
-
-// 图片列表
-const imageList = [
-    "https://yanxuan-item.nosdn.127.net/d917c92e663c5ed0bb577c7ded73e4ec.png",
-    "https://yanxuan-item.nosdn.127.net/e801b9572f0b0c02a52952b01adab967.jpg",
-    "https://yanxuan-item.nosdn.127.net/b52c447ad472d51adbdde1a83f550ac2.jpg",
-    "https://yanxuan-item.nosdn.127.net/f93243224dc37674dfca5874fe089c60.jpg",
-    "https://yanxuan-item.nosdn.127.net/f881cfe7de9a576aaeea6ee0d1d24823.jpg"
-]
+import { ref, watch } from 'vue';
+import { useMouseInElement } from '@vueuse/core';
+defineProps({
+    imageList: {
+        type: Array,
+        default: () => []
+    }
+})
+//切换
 const index = ref(0)
 const chooseEnter = (num) => {
     index.value = num
 }
+// 鼠标定位
+const target = ref()
+const { elementX, elementY, isOutside } = useMouseInElement(target)
+// 小图
+const top = ref(0)
+const left = ref(0)
+// 大图
+const positionX = ref(0)
+const positionY = ref(0)
+watch([elementX, elementY, isOutside], () => {
+    // console.log(isOutside.value)
+    if (isOutside.value) return
+    //距离
+    if (elementX.value > 100 && elementX.value < 300) {
+        left.value = elementX.value - 100
+    }
+    if (elementY.value > 100 && elementY.value < 300) {
+        top.value = elementY.value - 100
+    }
+    //边界
+    if (elementX.value > 300) { left.value = 200 }
+    if (elementX.value < 100) { left.value = 0 }
+    if (elementY.value > 300) { top.value = 200 }
+    if (elementY.value < 100) { top.value = 0 }
+    //大图
+    positionX.value = -left.value * 2
+    positionY.value = -top.value * 2
+
+})
+
 </script>
 
 
@@ -22,7 +51,7 @@ const chooseEnter = (num) => {
         <div class="middle" ref="target">
             <img :src="imageList[index]" alt="" />
             <!-- 蒙层小滑块 -->
-            <div class="layer" :style="{ left: `0px`, top: `0px` }"></div>
+            <div class="layer" :style="{ left: `${left}px`, top: `${top}px` }" v-show="!isOutside"></div>
         </div>
         <!-- 小图列表 -->
         <ul class="small">
@@ -35,11 +64,11 @@ const chooseEnter = (num) => {
         <!-- 放大镜大图 -->
         <div class="large" :style="[
             {
-                backgroundImage: `url(${imageList[0]})`,
-                backgroundPositionX: `0px`,
-                backgroundPositionY: `0px`,
+                backgroundImage: `url(${imageList[index]})`,
+                backgroundPositionX: `${positionX}px`,
+                backgroundPositionY: `${positionY}px`,
             },
-        ]" v-show="false"></div>
+        ]" v-show="!isOutside"></div>
     </div>
 </template>
 

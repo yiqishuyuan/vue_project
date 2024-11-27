@@ -40,7 +40,7 @@ onMounted(() => getViews())
           <div class="goods-info" v-if="goodsDetail">
             <div class="media">
               <!-- 图片预览区 -->
-              <imageViews></imageViews>
+              <imageViews :imageList="goodsDetail.mainPictures"></imageViews>
               <!-- 统计数量 -->
               <ul class="goods-sales">
                 <li>
