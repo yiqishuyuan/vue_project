@@ -4,6 +4,7 @@ import DetailHot from '@/components/detailHot.vue';
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import imageViews from '@/components/imageViews.vue';
+import skuDetail from '@/components/skuDetail.vue';
 defineOptions({
   name: 'categoryDetail'
 })
@@ -15,6 +16,10 @@ const getViews = async () => {
   goodsDetail.value = res.data.result
   console.log('detail', res);
 
+}
+const infoUserChange = (info) =>{
+     console.log(info);
+     
 }
 onMounted(() => getViews())
 </script>
@@ -91,7 +96,7 @@ onMounted(() => getViews())
                 </dl>
               </div>
               <!-- sku组件 -->
-
+              <skuDetail :goods="goodsDetail" @change="infoUserChange"></skuDetail>
               <!-- 数据组件 -->
 
               <!-- 按钮组件 -->
