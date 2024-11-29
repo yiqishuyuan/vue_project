@@ -12,7 +12,7 @@ defineOptions({
 const categoryOtherList = ref({})
 const getViews = async () => {
     const res = await getCategoryOther(route.params.id)
-    categoryOtherList.value = res.data.result
+    categoryOtherList.value = res.result
     console.log('son-category', res);
 
 }
@@ -26,7 +26,7 @@ const data = ref({
 })
 const getViewsSon = async () => {
     const res = await getCategoryOtherSon(data.value)
-    categoryOtherGoodList.value = res.data.result.items
+    categoryOtherGoodList.value = res.result.items
     console.log('categoryOtherGoodList', res);
 
 }

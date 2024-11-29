@@ -5,6 +5,8 @@ import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import imageViews from '@/components/imageViews.vue';
 import skuDetail from '@/components/skuDetail.vue';
+import { useCartsStore } from '@/stores';
+const store = useCartsStore()
 defineOptions({
   name: 'categoryDetail'
 })
@@ -13,13 +15,48 @@ const route = useRoute()
 const goodsDetail = ref({})
 const getViews = async () => {
   const res = await getProDetail(route.params.id)
-  goodsDetail.value = res.data.result
+  goodsDetail.value = res.result
   console.log('detail', res);
 
 }
-const infoUserChange = (info) =>{
-     console.log(info);
-     
+
+// 商品个数
+const numInfo = ref(1)
+const goodsNum = (value) => {
+  // console.log(value);
+  
+  numInfo.value = value
+}
+// sku 选择
+const goodsCategory = ref({})
+const infoUserChange = (info) => {
+  goodsCategory.value = info
+  console.log(info);
+
+}
+//添加购物车
+const addCarts = () => {
+  if (goodsCategory.value.skuId) {
+    console.log(numInfo.value);
+    
+    // 将数据传到购物车
+    store.addGoods({
+      skuId: goodsCategory.value.skuId,
+      name: goodsDetail.value.name,
+      picture: goodsDetail.value.mainPictures[0],
+      price: goodsDetail.value.price,
+      count: numInfo.value,
+      goodsText: goodsCategory.value.specsText,   //商品规格
+      isChecked: true
+    })
+
+    // eslint-disable-next-line no-undef
+    ElMessage.success('添加成功')
+  }
+  else {
+    // eslint-disable-next-line no-undef
+    ElMessage.error('请选择种类！')
+  }
 }
 onMounted(() => getViews())
 </script>
@@ -98,10 +135,10 @@ onMounted(() => getViews())
               <!-- sku组件 -->
               <skuDetail :goods="goodsDetail" @change="infoUserChange"></skuDetail>
               <!-- 数据组件 -->
-
+              <el-input-number @change="goodsNum" :model-value="numInfo" />
               <!-- 按钮组件 -->
               <div>
-                <el-button size="large" class="btn">
+                <el-button size="large" class="btn" @click="addCarts">
                   加入购物车
                 </el-button>
               </div>

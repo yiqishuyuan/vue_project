@@ -15,7 +15,7 @@ const categoryList = ref({})
 const route = useRoute()
 const getViews = async (id) => {
   const res = await getCategory(route.params.id || id)
-  categoryList.value = res.data.result
+  categoryList.value = res.result
   console.log('category', res)
 }
 
@@ -23,7 +23,7 @@ const bannerInfo = ref([])
 const getViewBanner = async () => {
   const res = await getBannerInfo(2)
   console.log('bannerson', res);
-  bannerInfo.value = res.data.result
+  bannerInfo.value = res.result
 
 }
 // // 配置路由

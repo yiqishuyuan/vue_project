@@ -7,7 +7,7 @@ getGoods
 const goodsList = ref([])
 const getViews = async () =>{
     const res = await getGoods()
-     goodsList.value = res.data.result
+     goodsList.value = res.result
     console.log('goods',res);
     
 }

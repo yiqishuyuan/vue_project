@@ -7,7 +7,7 @@ const bannerInfo = ref([])
 const getViews =async () =>{
     const res = await getBannerInfo(1)
     console.log('banner',res);
-    bannerInfo.value = res.data.result
+    bannerInfo.value = res.result
     
 }
 onMounted(()=>{

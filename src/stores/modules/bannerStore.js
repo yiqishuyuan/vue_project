@@ -8,7 +8,7 @@ export const useBannerStore = defineStore('bannerInfo', () => {
     const getViews = async () => {
         const res = await getHeaderInfo()
         console.log(res);
-        bannnerList.value = res.data.result
+        bannnerList.value = res.result
 
     }
     return {

@@ -7,7 +7,7 @@ const getViews = async () => {
     const res = await getNewsFish()
     console.log('new', res);
 
-    newList.value = res.data.result
+    newList.value = res.result
 }
 onMounted(() => {
     getViews()

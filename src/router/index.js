@@ -20,8 +20,15 @@ const router = createRouter({
         {
           path:'/detail/:id',
           component:() => import('@/views/detail/index.vue')
+        },{
+          path:'/carts/detail',
+          component:() =>import('@/views/cartListDetail/index.vue')
         }
       ]
+    },
+    {
+      path:'/login',
+      component:() =>import('@/views/login/index.vue')
     }
   ],
   // 切换路由返回顶部

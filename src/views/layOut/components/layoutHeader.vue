@@ -1,9 +1,12 @@
 <script setup>
+
+import CartGoods from '@/components/cartGoods.vue';
 import { useBannerStore } from '@/stores';
+
 import { onMounted } from 'vue';
 const useStore = useBannerStore()
 onMounted(
-  () =>{
+  () => {
     useStore.getViews()
   }
 )
@@ -25,7 +28,7 @@ onMounted(
         <input type="text" placeholder="搜一搜">
       </div>
       <!-- 头部购物车 -->
-
+      <CartGoods></CartGoods>
     </div>
   </header>
 </template>
