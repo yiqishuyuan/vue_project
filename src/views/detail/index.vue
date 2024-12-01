@@ -47,7 +47,7 @@ const addCarts = () => {
       price: goodsDetail.value.price,
       count: numInfo.value,
       goodsText: goodsCategory.value.specsText,   //商品规格
-      isChecked: true
+      selected: true
     })
 
     // eslint-disable-next-line no-undef

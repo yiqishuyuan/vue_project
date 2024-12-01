@@ -17,9 +17,23 @@ export const postCart = (data) => {
 // 删除商品
 export const delCart = (arr) => {
     // console.log(arr);
-    return request.delete('/member/cart',{
-        data:{
-            ids:arr
+    return request.delete('/member/cart', {
+        data: {
+            ids: arr
         }
+    })
+}
+// 更新数据和num
+export const upDataNumAndChecked = (id, data) => {
+    return request.put(`/member/cart/${id}`, {
+        selected: data.data.selected,
+        count: data.data.count
+    })
+}
+// 取消全选/全选
+export const upDataNumCheckedAll = (checkAll, ids) => {
+    return request.put('/member/cart/selected', {
+        selected: checkAll,
+        ids
     })
 }

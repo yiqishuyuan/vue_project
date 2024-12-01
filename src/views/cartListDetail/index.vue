@@ -2,7 +2,6 @@
 import router from '@/router';
 import { useCartsStore } from '@/stores';
 import { useUserInfoStore } from '@/stores';
-// import { ref } from 'vue';
 const store = useCartsStore()
 const userStore = useUserInfoStore()
 defineOptions({
@@ -11,34 +10,35 @@ defineOptions({
 // 勾选计算
 // 勾选反选
 const reChecked = (Bealon) => {
-    console.log('value', Bealon);
-
-    if (store.allCheck) {
-        store.InvertCheck(store.allCheck)
-    }
-    else {
-        store.InvertCheck(Bealon)
-    }
+    store.InvertCheck(Bealon)
 }
+
 // 子框
 const sonChecked = (id) => {
     store.sonCheck(id)
+
 }
 // 删除
 const delCart = (i) => {
-    console.log(i.skuId);
+    // console.log(i.skuId);
     store.delGoods(i.skuId)
 }
 // 结算
 const clickBuy = () => {
     const token = userStore.userInfo.token
     if (token) {
-        alert('正在确认！')
-        router.push('/buy')
-    } else if(confirm('需要登录！')){
+        // alert('正在确认！')
+        // eslint-disable-next-line no-undef
+        store.ischeckPrice.length ? router.push('/pay') : ElMessage.warning('没有确认的商品！')
+    } else if (confirm('需要登录！')) {
         router.push('/login')
     }
 }
+// 数量更新
+const NumberInfo = (i) => {
+    store.numUpdata(i)
+}
+
 </script>
 
 <template>
@@ -62,7 +62,7 @@ const clickBuy = () => {
                     <tbody>
                         <tr v-for="i in store.carts" :key="i.skuId">
                             <td>
-                                <el-checkbox :model-value="i.isChecked" @change="sonChecked(i.skuId)" />
+                                <el-checkbox :model-value="i.selected" @change="sonChecked(i)" />
                             </td>
                             <td>
                                 <div class="goods">
@@ -78,8 +78,9 @@ const clickBuy = () => {
                             <td class="tc">
                                 <p>&yen;{{ i.price }}</p>
                             </td>
+                            <!-- 数量 -->
                             <td class="tc">
-                                <el-input-number v-model="i.count" />
+                                <el-input-number @change="NumberInfo(i)" v-model:model-value="i.count" />
                             </td>
                             <td class="tc">
                                 <p class="f16 red">&yen;{{ (i.price * i.count).toFixed(2) }}</p>

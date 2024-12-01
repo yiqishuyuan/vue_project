@@ -59,6 +59,9 @@ const buttonEmits = async () => {
 
 
 <template>
+    <el-alert title="所有数据接口由黑马提供，数据不在本地保存，测试时请不要将个人信息保存到网站。部分接口更新或废弃，数据更新不及时" center type="success" :closable="true" />
+    <el-alert title="部分数据接口可能废弃或找不到，请在黑马官网查找数据接口，网站只负责教学演示！" center type="success" :closable="true" />
+    <el-alert title="账户:13888888888, 密码为:123456" type="success" center="" :closable="false" />
     <div>
         <header class="login-header">
             <div class="container m-top-20">

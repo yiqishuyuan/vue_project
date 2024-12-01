@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useUserInfoStore } from "./userInfo";
-import { getCartsList, postCart, delCart } from "@/apis/cartsInfo";
+import { getCartsList, postCart, delCart, upDataNumAndChecked, upDataNumCheckedAll } from "@/apis/cartsInfo";
 export const useCartsStore = defineStore('carts', () => {
     // 购物车数据
     const store = useUserInfoStore()
@@ -61,29 +61,66 @@ export const useCartsStore = defineStore('carts', () => {
     //计算子数量
     const allCount = computed(() => carts.value.reduce((num, item) => num + item.count, 0))
     // 计算勾选的价格
-    const ischeckPrice = computed(() => carts.value.filter((item) => item.isChecked))
+    const ischeckPrice = computed(() => carts.value.filter((item) => item.selected))
     const checkPrice = computed(() => ischeckPrice.value.reduce((num, item) => num + item.price * item.count, 0))
-
-    // 全选/反选
-    // 判断是否全选 返回true/false  //true则全选框亮
-    const allCheck = computed(() => carts.value.every((item) => item.isChecked))
+    const allCheck = computed(() => carts.value.every((item) => item.selected))
     //反选   所有框灭
-    const InvertCheck = (value) => {
-        if (allCheck.value) {
-            carts.value.forEach(item => item.isChecked = !item.isChecked)
+    const InvertCheck = async (value) => {
+        if (isToken.value) {
+            const res = await upDataNumCheckedAll(value, carts.value.map(item => item.skuId))
+            console.log('全选值组', res);
+            getViewsFuntion()
         } else {
-            carts.value.forEach(item => item.isChecked = value)
+            console.log('接收', value);
+            const otherCheck = computed(() => carts.value.every((item) => item.selected === value))
+            if (otherCheck.value) {
+                carts.value.forEach(item => item.selected = !item.selected)
+            } else {
+                carts.value.forEach(item => item.selected = value)
+            }
         }
     }
     //子框
-    const sonCheck = (id) => {
-        const item = carts.value.find(item => item.skuId === id)
-        // console.log(item);
-        if (item) {
-            item.isChecked = !item.isChecked
+    const sonCheck = async (data) => {
+        if (isToken.value) {
+            //请求数据
+            await upDataNumAndChecked(data.skuId, {
+                data: {
+                    selected: !data.selected,
+                    count: data.count
+                }
+            })
+
+            await getViewsFuntion()
+        } else {
+            const item = carts.value.find(item => item.skuId === data.skuId)
+            // console.log(item);
+            if (item) {
+                item.selected = !item.selected
+            }
         }
     }
+    // 子框和更改数量为两个不同的值 ，点击子框则更新，点击数量则数量更新
+    const numUpdata = async (data) => {
+        if (isToken.value) {
+            //请求数据
+            await upDataNumAndChecked(data.skuId, {
+                data: {
+                    selected: data.selected,
+                    count: data.count
+                }
+            })
 
+            await getViewsFuntion()
+        } else {
+            const item = carts.value.find(item => item.skuId === data.skuId)
+            console.log(item);
+            console.log('data,num',data);
+            if (item) {
+                item.count = data.count
+            }
+        }
+    }
     return {
         carts,
         allPrice,
@@ -97,6 +134,7 @@ export const useCartsStore = defineStore('carts', () => {
         sonCheck,
         addGoods,
         delGoods,
+        numUpdata
     }
 
 }, {
