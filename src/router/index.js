@@ -54,6 +54,11 @@ const router = createRouter({
           ]
         }
       ]
+    }, 
+    //此处是skus的练习
+    {
+      path: '/skus',
+      component: () => import('@/views/skusImport/skusFind.vue')
     },
     {
       path: '/login',
@@ -91,6 +96,6 @@ router.beforeEach((to, from, next) => {
     next('/login')
     return false
   }
-  
+
 })
 export default router
