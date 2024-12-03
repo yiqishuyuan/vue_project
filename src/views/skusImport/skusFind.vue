@@ -2,6 +2,7 @@
 <script setup>
 import { getProDetail } from '@/apis/shop_detail';
 import { onMounted, ref } from 'vue';
+import computedMessage from './index.js'
 const cartsInfo = ref([])
 const resSpecs = ref([])
 const inventoryNull = ref([])
@@ -14,8 +15,9 @@ const getViews = async () => {
         item.values.forEach(item => item.isSelected = false)
     })
 
-    getSkus()
-    getSkusInfo()
+    const skusResult = getSkus()
+    // console.log(skusResult);
+    initDisableStatus(skusResult)
 
 }
 
@@ -26,30 +28,81 @@ const fnclick = (i, index, item) => {
     const res = item.values.findIndex(it => it.name === i.name);
     const sku = resSpecs.value[big].values[res]
     // console.log(sku);
+    item.values.forEach(item=>item.isSelected = false)
     sku.isSelected = !sku.isSelected
+    checkDisabledStatus()
+
 
 }
 
-// 遍历skus ，其中每一个商品的inventory为0时则禁用相应商品规格
+// 遍历skus ，其中每一个商品的inventory为时则禁用相应商品规格
 const getSkus = () => {
+    const pathDir = {}
+    // 筛选库存大于0的商品规格
     inventoryNull.value = cartsInfo.value.filter((item) => {
-        return item.inventory === 0
+        return item.inventory > 0
     })
-    console.log(inventoryNull.value);
+    // 将商品规格遍历
+    inventoryNull.value.forEach(sku => {
+        // 匹配每一个valueName的值
+        const selectedArr = sku.specs.map(item => item.valueName)
+        // 匹配算法，请查看导入的index.js中的代码
+        const subset = computedMessage(selectedArr)
+        // console.log(subset);
+        // 遍历匹配算法的结果，并重新生成对象
+        subset.forEach(item => {
+            // console.log(item);
+            // 数组的每一个元素拼接
+            const key = item.join('-')
+            // console.log('this',key）
+            if (pathDir[key]) {
+                pathDir[key].push(sku.id)
+            } else {
+                pathDir[key] = [sku.id]
+            }
+        })
 
-
+    })
+    return pathDir
 }
-// 处理 ---假设满足两个条件，其第三个必须禁用 --或者在处理的数组中看每一个是否都有相同的规格，则相同规格禁用
-const getSkusInfo = (i) => {
-    const o = ref([])
-    inventoryNull.value.forEach((item) => {
-        item.specs.forEach(item => {
-            o.value.push(item.valueName)
+
+// 禁用遍历过后的skus
+const initDisableStatus = (skusResult) => {
+    resSpecs.value.forEach(specs => {
+        specs.values.forEach(item => {
+            if (skusResult[item.name]) {
+                item.disbaled = false
+            } else {
+                item.disbaled = true
+            }
         })
     })
-    console.log(o.value);
-    
+}
+// 点击时切换禁用状态 
+/*
+在禁用时需要传值，先创建一个数组啊
 
+*/
+
+// 函数传值
+const conformButtonInfo = (specs) => {
+    const button = []
+    // console.log(specs);
+    specs.forEach((item => {
+        // console.log(item);
+        const selectedValue = item.values.find(i => i.isSelected)
+        button.push(selectedValue ? selectedValue.name : undefined)
+    }))
+    return button
+}
+const checkDisabledStatus = () => {
+    const arr = conformButtonInfo(resSpecs.value)
+    console.log(resSpecs.value);
+    resSpecs.value.forEach((item,index) =>{
+        
+    })
+
+    console.log('arr', arr);
 }
 onMounted(() => getViews())
 </script>
@@ -63,9 +116,10 @@ onMounted(() => getViews())
                 <div class="componets" v-for="(i, index) in item.values" :key="index">
                     <ul class="li-info">
                         <img :src="i.picture" alt="" class="img-pic" v-if="i.picture" @click="fnclick(i, index, item)"
-                            :class="{ active: i.isSelected }">
+                            :class="{ active: i.isSelected, disabled: i.disbaled }">
                         <!-- 可能有多种规格 -->
-                        <li class="box" @click="fnclick(i, index, item)" :class="{ active: i.isSelected }" v-else>
+                        <li class="box" @click="fnclick(i, index, item)"
+                            :class="{ active: i.isSelected, disabled: i.disbaled }" v-else>
                             {{
                                 i.name
                             }}
@@ -95,7 +149,7 @@ onMounted(() => getViews())
             justify-content: space-evenly;
             position: relative;
             margin: 10px 0;
-            border-top:1px solid rgb(200, 200, 200) ;
+            border-top: 1px solid rgb(200, 200, 200);
 
 
             .li-info {
@@ -116,13 +170,19 @@ onMounted(() => getViews())
                     border-radius: 5px;
                     line-height: 25px;
                     cursor: pointer;
-                    
+
                 }
 
                 .active,
                 >:hover {
                     background-color: red;
                     border-radius: 5px;
+                }
+
+                .disabled {
+                    background-color: rgb(243, 243, 243);
+                    cursor: not-allowed;
+                    border-style: dashed;
                 }
 
             }
