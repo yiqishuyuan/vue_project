@@ -24,13 +24,6 @@ const getViews = async () => {
 
 // 点击 --- 点击，无论有多少行，多少规格。暂时只管理一行内容的点击且active
 const fnclick = (i, index, item) => {
-    // 先判断是不是这一排的
-    // console.log('i在这', i);
-
-    // const big = resSpecs.value.findIndex(se => se.id === item.id)
-    // const res = item.values.findIndex(it => it.name === i.name);
-    // const sku = resSpecs.value[big].values[res]
-    // console.log('这里', item);
     if (i.disabled) return i.isSelected = false
     if (i.isSelected) {
         i.isSelected = false
@@ -40,6 +33,24 @@ const fnclick = (i, index, item) => {
 
     }
     checkDisabledStatus(skusResult, resSpecs.value)
+    // 数据产出
+    const Result = conformButtonInfo(resSpecs.value)
+    const dataResult = Result.filter(value => value).join('-')
+    if (skusResult[dataResult]) {
+        // 找到的数据为数组
+        console.log('拼接的数据为', skusResult[dataResult]);
+        const skuObj = cartsInfo.value.find(item => item.id === skusResult[dataResult][0])
+        // console.log('数据对象为', skuObj);
+        // 此处进行数据拼接提交后端，以下为假设
+        const data = {
+            skuId: skuObj.id,
+            price: skuObj.price,
+            specs: skuObj.specs
+        }
+        console.log('最终提交后端的数据为：', data);
+
+
+    }
 
 
 }
@@ -48,9 +59,7 @@ const fnclick = (i, index, item) => {
 const getSkus = () => {
     const pathDir = {}
     // 筛选库存大于0的商品规格
-    inventoryNull.value = cartsInfo.value.filter((item) => {
-        return item.inventory > 0
-    })
+    inventoryNull.value = cartsInfo.value.filter((item) => item.inventory > 0)
     // 将商品规格遍历
     inventoryNull.value.forEach(sku => {
         // 匹配每一个valueName的值
@@ -79,56 +88,39 @@ const getSkus = () => {
 const initDisableStatus = (skusResult) => {
     resSpecs.value.forEach(specs => {
         specs.values.forEach(item => {
-            // console.log('thie', item.name);
-
-            if (skusResult[item.name]) {
-                item.disabled = false
-            } else {
-                item.disabled = true
-            }
+            const key = item.name
+            item.disabled = !skusResult[key]
         })
     })
 }
-// 点击时切换禁用状态 
-/*
-在禁用时需要传值，先创建一个数组啊
 
-*/
 
 // 函数传值
-const conformButtonInfo = (specs) => {
-    let button = []
-    // console.log('mniij', specs);
-    specs.forEach((item => {
-        // console.log(item);
-        const selectedValue = item.values.find(i => i.isSelected)
-        if (selectedValue) {
-            button.push(selectedValue ? selectedValue.name : undefined)
-        }
-    }))
-    return button
-
+const conformButtonInfo = specs => {
+    return specs.map(item => {
+        const selectedValue = item.values.find(i => i.isSelected);
+        return selectedValue ? selectedValue.name : undefined;
+    });
 }
 //更新点击状态
 
 const checkDisabledStatus = (skusResult, val) => {
-    // const arr = conformButtonInfo(val)
-    // 遍历
     val.forEach((outer, index) => {
         // 循环每个对象时将新的状态重新传入
         const arr = conformButtonInfo(val)
         // 循环每个小对象/数
         console.log('每次数组状态', arr);
         outer.values.forEach((val => {
-            if (!val.disabled) {
-                arr[index] = val.name
-                // 去掉undefined之后组合成key
-                const key = arr.filter(value => value).join('-')
-                val.disabled = !skusResult[key]
-            }
+            arr[index] = val.name
+            const key = arr.filter(value => value).join('-')
+            val.disabled = !skusResult[key]
+            console.log(`Key: ${key}, disabled: ${val.disabled}`);
 
         }))
     })
+
+
+
 }
 
 //
