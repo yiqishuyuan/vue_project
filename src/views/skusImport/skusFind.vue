@@ -31,16 +31,13 @@ const fnclick = (i, index, item) => {
     // const res = item.values.findIndex(it => it.name === i.name);
     // const sku = resSpecs.value[big].values[res]
     // console.log('这里', item);
-    // 先判断当前的点击是否是被disabled
-    if (i.disabled) {
+    if (i.disabled) return i.isSelected = false
+    if (i.isSelected) {
         i.isSelected = false
-    }
-    else if (i.isSelected) {
-        i.isSelected = !i.isSelected
-    }
-    else {
+    } else {
         item.values.forEach(item => item.isSelected = false)
         i.isSelected = true
+
     }
     checkDisabledStatus(skusResult, resSpecs.value)
 
@@ -110,34 +107,31 @@ const conformButtonInfo = (specs) => {
         }
     }))
     return button
+
 }
 //更新点击状态
-let arr
+
 const checkDisabledStatus = (skusResult, val) => {
+    // const arr = conformButtonInfo(val)
     // 遍历
     val.forEach((outer, index) => {
         // 循环每个对象时将新的状态重新传入
-        arr = conformButtonInfo(val)
-        // 循环每个小对象/数组
+        const arr = conformButtonInfo(val)
+        // 循环每个小对象/数
         console.log('每次数组状态', arr);
-
-        outer.values.forEach((item => {
-            // console.log('item.name', item.name);
-            arr[index] = item.name
-            const key = arr.filter(value => value).join('-')
-            if (skusResult[key]) {
-                item.disabled = false
-            } else {
-                item.disabled = true
+        outer.values.forEach((val => {
+            if (!val.disabled) {
+                arr[index] = val.name
+                // 去掉undefined之后组合成key
+                const key = arr.filter(value => value).join('-')
+                val.disabled = !skusResult[key]
             }
-
 
         }))
     })
-    // console.log('key', key);
-
-    console.log('整理的数组', arr);
 }
+
+
 
 onMounted(() => getViews())
 </script>
