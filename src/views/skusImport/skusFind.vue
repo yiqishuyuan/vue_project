@@ -6,16 +6,17 @@ import computedMessage from './index.js'
 const cartsInfo = ref([])
 const resSpecs = ref([])
 const inventoryNull = ref([])
+let skusResult
 // const selected = ref(null)
 const getViews = async () => {
-    const res = await getProDetail(1379052170040578049n)
+    const res = await getProDetail(1369155859933827074n)
     cartsInfo.value = res.result.skus;
     resSpecs.value = res.result.specs
     resSpecs.value.forEach(item => {
         item.values.forEach(item => item.isSelected = false)
     })
 
-    const skusResult = getSkus()
+    skusResult = getSkus()
     // console.log(skusResult);
     initDisableStatus(skusResult)
 
@@ -24,13 +25,24 @@ const getViews = async () => {
 // 点击 --- 点击，无论有多少行，多少规格。暂时只管理一行内容的点击且active
 const fnclick = (i, index, item) => {
     // 先判断是不是这一排的
-    const big = resSpecs.value.findIndex(se => se.id === item.id)
-    const res = item.values.findIndex(it => it.name === i.name);
-    const sku = resSpecs.value[big].values[res]
-    // console.log(sku);
-    item.values.forEach(item=>item.isSelected = false)
-    sku.isSelected = !sku.isSelected
-    checkDisabledStatus()
+    // console.log('i在这', i);
+
+    // const big = resSpecs.value.findIndex(se => se.id === item.id)
+    // const res = item.values.findIndex(it => it.name === i.name);
+    // const sku = resSpecs.value[big].values[res]
+    // console.log('这里', item);
+    // 先判断当前的点击是否是被disabled
+    if (i.disabled) {
+        i.isSelected = false
+    }
+    else if (i.isSelected) {
+        i.isSelected = !i.isSelected
+    }
+    else {
+        item.values.forEach(item => item.isSelected = false)
+        i.isSelected = true
+    }
+    checkDisabledStatus(skusResult, resSpecs.value)
 
 
 }
@@ -48,13 +60,13 @@ const getSkus = () => {
         const selectedArr = sku.specs.map(item => item.valueName)
         // 匹配算法，请查看导入的index.js中的代码
         const subset = computedMessage(selectedArr)
-        // console.log(subset);
+        // console.log('subset',subset);
         // 遍历匹配算法的结果，并重新生成对象
         subset.forEach(item => {
             // console.log(item);
             // 数组的每一个元素拼接
             const key = item.join('-')
-            // console.log('this',key）
+            // console.log('this', key)
             if (pathDir[key]) {
                 pathDir[key].push(sku.id)
             } else {
@@ -70,10 +82,12 @@ const getSkus = () => {
 const initDisableStatus = (skusResult) => {
     resSpecs.value.forEach(specs => {
         specs.values.forEach(item => {
+            // console.log('thie', item.name);
+
             if (skusResult[item.name]) {
-                item.disbaled = false
+                item.disabled = false
             } else {
-                item.disbaled = true
+                item.disabled = true
             }
         })
     })
@@ -86,24 +100,45 @@ const initDisableStatus = (skusResult) => {
 
 // 函数传值
 const conformButtonInfo = (specs) => {
-    const button = []
-    // console.log(specs);
+    let button = []
+    // console.log('mniij', specs);
     specs.forEach((item => {
         // console.log(item);
         const selectedValue = item.values.find(i => i.isSelected)
-        button.push(selectedValue ? selectedValue.name : undefined)
+        if (selectedValue) {
+            button.push(selectedValue ? selectedValue.name : undefined)
+        }
     }))
     return button
 }
-const checkDisabledStatus = () => {
-    const arr = conformButtonInfo(resSpecs.value)
-    console.log(resSpecs.value);
-    resSpecs.value.forEach((item,index) =>{
-        
-    })
+//更新点击状态
+let arr
+const checkDisabledStatus = (skusResult, val) => {
+    // 遍历
+    val.forEach((outer, index) => {
+        // 循环每个对象时将新的状态重新传入
+        arr = conformButtonInfo(val)
+        // 循环每个小对象/数组
+        console.log('每次数组状态', arr);
 
-    console.log('arr', arr);
+        outer.values.forEach((item => {
+            // console.log('item.name', item.name);
+            arr[index] = item.name
+            const key = arr.filter(value => value).join('-')
+            if (skusResult[key]) {
+                item.disabled = false
+            } else {
+                item.disabled = true
+            }
+
+
+        }))
+    })
+    // console.log('key', key);
+
+    console.log('整理的数组', arr);
 }
+
 onMounted(() => getViews())
 </script>
 <template>
@@ -115,11 +150,12 @@ onMounted(() => getViews())
                 <span>{{ item.name }}</span>
                 <div class="componets" v-for="(i, index) in item.values" :key="index">
                     <ul class="li-info">
-                        <img :src="i.picture" alt="" class="img-pic" v-if="i.picture" @click="fnclick(i, index, item)"
-                            :class="{ active: i.isSelected, disabled: i.disbaled }">
+                        <img :src="i.picture" alt="" class="img-pic" v-if="i.picture"
+                            @click="$event => fnclick(i, index, item)"
+                            :class="{ active: i.isSelected, disabled: i.disabled }">
                         <!-- 可能有多种规格 -->
-                        <li class="box" @click="fnclick(i, index, item)"
-                            :class="{ active: i.isSelected, disabled: i.disbaled }" v-else>
+                        <li class="box" @click="$event => fnclick(i, index, item)"
+                            :class="{ active: i.isSelected, disabled: i.disabled }" v-else>
                             {{
                                 i.name
                             }}
