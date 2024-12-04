@@ -24,7 +24,6 @@ const getViews = async () => {
 
 // 点击 --- 点击，无论有多少行，多少规格。暂时只管理一行内容的点击且active
 const fnclick = (i, index, item) => {
-
     if (i.disabled) return i.isSelected = false
     if (i.isSelected) {
         i.isSelected = false
@@ -34,6 +33,24 @@ const fnclick = (i, index, item) => {
 
     }
     checkDisabledStatus(skusResult, resSpecs.value)
+    // 数据产出
+    const Result = conformButtonInfo(resSpecs.value)
+    const dataResult = Result.filter(value => value).join('-')
+    if (skusResult[dataResult]) {
+        // 找到的数据为数组
+        console.log('拼接的数据为', skusResult[dataResult]);
+        const skuObj = cartsInfo.value.find(item => item.id === skusResult[dataResult][0])
+        // console.log('数据对象为', skuObj);
+        // 此处进行数据拼接提交后端，以下为假设
+        const data = {
+            skuId: skuObj.id,
+            price: skuObj.price,
+            specs: skuObj.specs
+        }
+        console.log('最终提交后端的数据为：', data);
+
+
+    }
 
 
 }
@@ -76,26 +93,9 @@ const initDisableStatus = (skusResult) => {
         })
     })
 }
-// 点击时切换禁用状态 
-/*
-在禁用时需要传值，先创建一个数组啊
 
-*/
 
 // 函数传值
-// const conformButtonInfo = (specs) => {
-//     let button = []
-//     // console.log('mniij', specs);
-//     specs.forEach((item => {
-//         // console.log(item);
-//         const selectedValue = item.values.find(i => i.isSelected)
-//         // if (selectedValue) {
-//         button.push(selectedValue ? selectedValue.name : undefined)
-//         // }
-//     }))
-//     return button
-
-// }
 const conformButtonInfo = specs => {
     return specs.map(item => {
         const selectedValue = item.values.find(i => i.isSelected);
@@ -105,7 +105,6 @@ const conformButtonInfo = specs => {
 //更新点击状态
 
 const checkDisabledStatus = (skusResult, val) => {
-    // 遍历
     val.forEach((outer, index) => {
         // 循环每个对象时将新的状态重新传入
         const arr = conformButtonInfo(val)
@@ -113,13 +112,15 @@ const checkDisabledStatus = (skusResult, val) => {
         console.log('每次数组状态', arr);
         outer.values.forEach((val => {
             arr[index] = val.name
-            // 去掉undefined之后组合成key
             const key = arr.filter(value => value).join('-')
             val.disabled = !skusResult[key]
-            console.log(`Key: ${key}, Disabled: ${val.disabled}`);
+            console.log(`Key: ${key}, disabled: ${val.disabled}`);
 
         }))
     })
+
+
+
 }
 
 //
