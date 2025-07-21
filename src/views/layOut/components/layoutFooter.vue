@@ -61,8 +61,41 @@
       </div>
     </div>
   </footer>
+   <div>
+    <!-- 广告位容器 -->
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-8733262232412026"
+         data-ad-slot="8416761583"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+  </div>
 </template>
 
+<script>
+export default {
+  name: 'GoogleAd',
+  mounted() {
+    // 判断脚本是否已加载，避免多次添加
+    if (!document.getElementById('adsbygoogle-js')) {
+      const script = document.createElement('script')
+      script.async = true
+      script.id = 'adsbygoogle-js'
+      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8733262232412026'
+      script.crossOrigin = 'anonymous'
+      document.head.appendChild(script)
+
+      script.onload = () => {
+        // 加载完后推送广告
+        (window.adsbygoogle = window.adsbygoogle || []).push({})
+      }
+    } else {
+      // 如果脚本已存在，直接推送广告
+      (window.adsbygoogle = window.adsbygoogle || []).push({})
+    }
+  }
+}
+</script>
 <style scoped lang='scss'>
 .app_footer {
   overflow: hidden;
